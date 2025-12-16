@@ -1,0 +1,127 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:limewyre/appModules/group/create_group.dart';
+import 'package:limewyre/appModules/group/group_controller.dart';
+import 'package:limewyre/appModules/group/group_note.dart';
+import 'package:limewyre/models/groups_model.dart';
+import 'package:limewyre/utils/const_page.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+
+class GroupsPage extends StatelessWidget {
+  final GroupController controller = Get.isRegistered()
+      ? Get.find<GroupController>()
+      : Get.put(GroupController());
+  GroupsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      floatingActionButton: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorConst.groupPrimary,
+        ),
+        onPressed: () =>
+            Get.dialog(barrierDismissible: false, CreateGroupDialog()),
+        icon: Icon(Icons.group_add_outlined),
+        label: const Text('Create group'),
+      ),
+      body: RefreshIndicator(
+        color: ColorConst.groupPrimary,
+        onRefresh: () async => await controller.listGroups(),
+        child: Obx(() {
+          if (controller.isGroupsLoading.value) {
+            return Center(
+              child: LoadingAnimationWidget.staggeredDotsWave(
+                color: ColorConst.groupPrimary,
+                size: 25,
+              ),
+            );
+          }
+          if (controller.groups.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('No Groups added'),
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      foregroundColor: ColorConst.groupPrimary,
+                    ),
+                    onPressed: () async => controller.listGroups(),
+                    label: const Text('Refresh'),
+                    icon: Icon(Icons.refresh),
+                  ),
+                ],
+              ),
+            );
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: controller.groups.length,
+            itemBuilder: (context, index) {
+              final group = controller.groups[index];
+              return _groupCard(group: group);
+            },
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _groupCard({required GroupItem group}) {
+    bool isowner = group.userRole == 'OWNER';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: ColorConst.groupPrimary.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ListTile(
+        onTap: () => Get.to(() => GroupNote(group: group)),
+        contentPadding: EdgeInsets.zero,
+        leading: Container(
+          height: 50,
+          width: 50,
+          decoration: BoxDecoration(
+            color: const Color(0xFFE0FCE4),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Icon(Icons.group, size: 28, color: Color(0xFF22C55E)),
+        ),
+        title: Text(
+          group.groupName,
+          overflow: TextOverflow.ellipsis,
+          softWrap: true,
+          style: Get.textTheme.bodyMedium!.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        // subtitle: Text(
+        //   'Tap to add notes',
+        //   style: Get.textTheme.bodySmall!.copyWith(color: Colors.grey),
+        // ),
+        trailing: isowner
+            ? Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: ColorConst.groupPrimary,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Owner',
+                  style: Get.textTheme.bodySmall!.copyWith(color: Colors.white),
+                ),
+              )
+            : null,
+      ),
+    );
+  }
+}

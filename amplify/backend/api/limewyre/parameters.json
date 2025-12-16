@@ -1,0 +1,5 @@
+{
+  "AppSyncApiName": "limewyre",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false
+}

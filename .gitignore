@@ -1,0 +1,44 @@
+# ===== Flutter / Dart =====
+.dart_tool/
+.packages
+.pub/
+build/
+
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# ===== Android =====
+android/.gradle/
+android/local.properties
+
+# ===== iOS =====
+ios/Pods/
+ios/Runner.xcworkspace/
+
+# ===== IDEs =====
+.idea/
+.vscode/
+*.iml
+
+# ===== Logs =====
+*.log
+
+# ===== Amplify (DO NOT EDIT SECTION) =====
+#amplify-do-not-edit-begin
+amplify/#current-cloud-backend
+amplify/.config/local-*
+amplify/logs
+amplify/mock-data
+amplify/mock-api-resources
+amplify/backend/.temp
+#amplify-do-not-edit-end
+
+# ===== Node =====
+node_modules/
+dist/
+
+# ===== Secrets =====
+.secret-*
+
+# ===== Explicitly tracked Amplify files =====
+!amplifyconfiguration.dart

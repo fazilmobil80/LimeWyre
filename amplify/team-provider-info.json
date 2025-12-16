@@ -1,0 +1,38 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-limewyre-dev-37701-authRole",
+      "UnauthRoleArn": "arn:aws:iam::231427841372:role/amplify-limewyre-dev-37701-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::231427841372:role/amplify-limewyre-dev-37701-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-limewyre-dev-37701-deployment",
+      "UnauthRoleName": "amplify-limewyre-dev-37701-unauthRole",
+      "StackName": "amplify-limewyre-dev-37701",
+      "StackId": "arn:aws:cloudformation:us-east-1:231427841372:stack/amplify-limewyre-dev-37701/9e2a44c0-d1c8-11f0-8580-0affd9260a51",
+      "AmplifyAppId": "dkh0tk4vcebwc"
+    },
+    "categories": {
+      "auth": {
+        "limewyre68adc71a": {}
+      }
+    }
+  },
+  "mobile": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-limewyre-mobile-1ccaa-authRole",
+      "UnauthRoleArn": "arn:aws:iam::231427841372:role/amplify-limewyre-mobile-1ccaa-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::231427841372:role/amplify-limewyre-mobile-1ccaa-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-limewyre-mobile-1ccaa-deployment",
+      "UnauthRoleName": "amplify-limewyre-mobile-1ccaa-unauthRole",
+      "StackName": "amplify-limewyre-mobile-1ccaa",
+      "StackId": "arn:aws:cloudformation:us-east-1:231427841372:stack/amplify-limewyre-mobile-1ccaa/86335510-d1cc-11f0-88e5-0e77fcf7fb65",
+      "AmplifyAppId": "dkh0tk4vcebwc"
+    },
+    "categories": {
+      "auth": {
+        "limewyre68adc71a": {}
+      }
+    }
+  }
+}

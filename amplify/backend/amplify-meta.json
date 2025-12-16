@@ -1,0 +1,87 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-limewyre-mobile-1ccaa-authRole",
+      "UnauthRoleArn": "arn:aws:iam::231427841372:role/amplify-limewyre-mobile-1ccaa-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::231427841372:role/amplify-limewyre-mobile-1ccaa-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-limewyre-mobile-1ccaa-deployment",
+      "UnauthRoleName": "amplify-limewyre-mobile-1ccaa-unauthRole",
+      "StackName": "amplify-limewyre-mobile-1ccaa",
+      "StackId": "arn:aws:cloudformation:us-east-1:231427841372:stack/amplify-limewyre-mobile-1ccaa/86335510-d1cc-11f0-88e5-0e77fcf7fb65",
+      "AmplifyAppId": "dkh0tk4vcebwc"
+    }
+  },
+  "auth": {
+    "limewyre68adc71a": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
+  "api": {
+    "limewyre": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "API_KEY",
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            }
+          },
+          "additionalAuthenticationProviders": []
+        }
+      }
+    },
+    "Limewyre_Portal": {
+      "service": "AppSync",
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS"
+          },
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "API_KEY"
+            }
+          ],
+          "userPoolConfig": {
+            "userPoolId": "us-east-1_jo21jm5Gv",
+            "awsRegion": "us-east-1",
+            "defaultAction": "ALLOW"
+          }
+        },
+        "GraphQLAPIIdOutput": "5z5xoszzdndtpjbnpfvvwxcfsi",
+        "GraphQLAPIEndpointOutput": "https://pzr4yixttbdijfgc75vuh746qq.appsync-api.us-east-1.amazonaws.com/graphql",
+        "name": "Limewyre_Portal",
+        "region": "us-east-1",
+        "GraphQLAPIKeyOutput": "da2-yvfbk7zw3nfn5dwmagxiewppfe"
+      },
+      "lastPushTimeStamp": "2025-12-15T10:47:27.281Z"
+    }
+  }
+}
