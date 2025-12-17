@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:get/get.dart';
 import 'package:limewyre/appModules/group/group_controller.dart';
 import 'package:limewyre/appModules/group/group_info.dart';
@@ -7,10 +6,8 @@ import 'package:limewyre/appModules/notes/note_card.dart';
 import 'package:limewyre/appModules/notes/notes_controller.dart';
 import 'package:limewyre/models/groups_model.dart';
 import 'package:limewyre/utils/const_page.dart';
-import 'package:limewyre/utils/custom_widgets.dart';
 import 'package:limewyre/utils/global_variables.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class GroupNote extends StatefulWidget {
   final GroupModel group;

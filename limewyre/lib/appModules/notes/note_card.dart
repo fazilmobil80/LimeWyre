@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:limewyre/appModules/notes/notes_controller.dart';
 import 'package:limewyre/utils/const_page.dart';
 import 'package:limewyre/utils/custom_widgets.dart';
+import 'package:limewyre/utils/global_variables.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NoteCard extends StatelessWidget {
@@ -25,13 +26,22 @@ class NoteCard extends StatelessWidget {
       color: isGroup ? ColorConst.groupPrimary : Colors.white,
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
         child: Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (isGroup)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        note['owner'] == currentUserEmail
+                            ? '@You'
+                            : "@${note['owner']}",
+                      ),
+                    ),
                   Linkify(
                     text: note['text'] ?? note['resolved_text'] ?? '',
                     style: Get.textTheme.bodyMedium!.copyWith(
@@ -52,6 +62,7 @@ class NoteCard extends StatelessWidget {
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Row(
                         children: [
@@ -79,65 +90,69 @@ class NoteCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      // if (!loading)
-                      PopupMenuButton(
-                        tooltip: 'More options',
-                        menuPadding: EdgeInsets.zero,
-                        color: Colors.white,
-                        icon: isGroup
-                            ? Icon(
-                                Icons.more_vert,
-                                color: loading
-                                    ? ColorConst.groupPrimary
-                                    : Colors.grey.shade300,
-                              )
-                            : Icon(
-                                Icons.more_vert,
-                                color: loading
-                                    ? Colors.white
-                                    : Colors.grey.shade600,
+                      if (note['owner'] == currentUserEmail)
+                        PopupMenuButton(
+                          tooltip: 'More options',
+                          menuPadding: EdgeInsets.zero,
+                          color: Colors.white,
+                          icon: isGroup
+                              ? Icon(
+                                  Icons.more_vert,
+                                  color: loading
+                                      ? ColorConst.groupPrimary
+                                      : Colors.grey.shade300,
+                                )
+                              : Icon(
+                                  Icons.more_vert,
+                                  color: loading
+                                      ? Colors.white
+                                      : Colors.grey.shade600,
+                                ),
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              child: ListTile(
+                                leading: Icon(Icons.edit),
+                                title: Text('Edit'),
+                                onTap: () async {
+                                  Get.back();
+                                  controller.textController.text =
+                                      note['text'] ??
+                                      note['resolved_text'] ??
+                                      '';
+                                  controller.noteTexts.value =
+                                      note['text'] ??
+                                      note['resolved_text'] ??
+                                      '';
+                                  controller.editingNoteId = note['note_id'];
+                                  controller.focusNode.requestFocus();
+                                  controller.isEditingNote.value = true;
+                                },
                               ),
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            child: ListTile(
-                              leading: Icon(Icons.edit),
-                              title: Text('Edit'),
-                              onTap: () async {
-                                Get.back();
-                                controller.textController.text =
-                                    note['text'] ?? note['resolved_text'] ?? '';
-                                controller.noteTexts.value =
-                                    note['text'] ?? note['resolved_text'] ?? '';
-                                controller.editingNoteId = note['note_id'];
-                                controller.focusNode.requestFocus();
-                                controller.isEditingNote.value = true;
-                              },
                             ),
-                          ),
 
-                          PopupMenuItem(
-                            child: ListTile(
-                              leading: Icon(Icons.delete, color: Colors.red),
-                              title: Text('Delete'),
-                              onTap: () async {
-                                Get.back();
-                                bool
-                                result = await CustomWidgets.customAlertBox(
-                                  title: 'Delete note',
-                                  content:
-                                      'Are you sure you want to delete this note?',
-                                );
-                                if (result == true) {
-                                  controller.deleteNote(
-                                    noteId: note['note_id'],
-                                    groupId: groupId,
+                            PopupMenuItem(
+                              child: ListTile(
+                                leading: Icon(Icons.delete, color: Colors.red),
+                                title: Text('Delete'),
+                                onTap: () async {
+                                  Get.back();
+                                  bool
+                                  result = await CustomWidgets.customAlertBox(
+                                    title: 'Delete note',
+                                    content:
+                                        'Are you sure you want to delete this note?',
                                   );
-                                }
-                              },
+                                  if (result == true) {
+                                    controller.deleteNote(
+                                      noteId: note['note_id'],
+                                      groupId: groupId,
+                                    );
+                                  }
+                                },
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
                     ],
                   ),
                 ],
