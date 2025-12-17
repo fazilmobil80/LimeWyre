@@ -17,7 +17,7 @@ class GroupController extends GetxController {
   }
 
   RxInt selectedIndex = 0.obs;
-  RxList<GroupItem> groups = <GroupItem>[].obs;
+  RxList<GroupModel> groups = <GroupModel>[].obs;
 
   RxBool isGroupsLoading = false.obs;
   Future listGroups() async {
@@ -28,10 +28,10 @@ class GroupController extends GetxController {
         input: {'limit': 101, 'next_token': 'undefined'},
         label: 'ListGroups',
       );
-      GroupListResponse groupData = GroupListResponse.fromJson(data);
+      GroupListModel groupData = GroupListModel.fromJson(data);
       groups.value = groupData.data.items;
       groups.removeWhere((e) => e.groupName == currentUserEmail);
-      groups.sort((a, b) => b.userCreatedOn.compareTo(a.userCreatedOn));
+      groups.sort((a, b) => b.groupCreatedOn.compareTo(a.groupCreatedOn));
     } catch (e) {
       log('Error listing groups :$e');
     } finally {
@@ -73,7 +73,6 @@ class GroupController extends GetxController {
         label: 'ListGroupUsers',
       );
       if (data['status'] == 'SUCCESS') {
-        log('GROUP MEMBERS === ${data['data']}');
         groupMembers.value = GroupMembersResponse.fromJson(data['data']).items;
         groupMembers.sort((a, b) {
           if (a.userEmailId == currentUserEmail) return -1;

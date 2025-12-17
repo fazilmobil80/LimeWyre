@@ -3,6 +3,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:get/get.dart';
 import 'package:limewyre/appModules/group/group_controller.dart';
 import 'package:limewyre/appModules/group/group_info.dart';
+import 'package:limewyre/appModules/notes/note_card.dart';
 import 'package:limewyre/appModules/notes/notes_controller.dart';
 import 'package:limewyre/models/groups_model.dart';
 import 'package:limewyre/utils/const_page.dart';
@@ -12,7 +13,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class GroupNote extends StatefulWidget {
-  final GroupItem group;
+  final GroupModel group;
   const GroupNote({super.key, required this.group});
 
   @override
@@ -27,12 +28,12 @@ class _GroupNoteState extends State<GroupNote> {
       ? Get.find<GroupController>()
       : Get.put(GroupController());
 
-  final textController = TextEditingController();
-
   @override
   void initState() {
-    noteController.loadGroupNotes(widget.group.groupId);
+    noteController.textController = TextEditingController();
+    noteController.loadNotes(widget.group.groupId);
     groupController.listMembers(widget.group.groupId);
+    noteController.clearNoteEditing();
     super.initState();
   }
 
@@ -69,8 +70,11 @@ class _GroupNoteState extends State<GroupNote> {
         padding: const EdgeInsets.all(8.0),
         child: RefreshIndicator(
           color: ColorConst.groupPrimary,
-          onRefresh: () async =>
-              noteController.loadGroupNotes(widget.group.groupId),
+          onRefresh: () async {
+            noteController.isLoading.value = true;
+            await noteController.listNotes(widget.group.groupId);
+            noteController.isLoading.value = false;
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -84,7 +88,7 @@ class _GroupNoteState extends State<GroupNote> {
                       ),
                     );
                   }
-                  if (noteController.groupNotes.isEmpty) {
+                  if (noteController.noteList.isEmpty) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -94,8 +98,13 @@ class _GroupNoteState extends State<GroupNote> {
                             style: TextButton.styleFrom(
                               foregroundColor: ColorConst.groupPrimary,
                             ),
-                            onPressed: () async => noteController
-                                .loadGroupNotes(widget.group.groupId),
+                            onPressed: () async {
+                              noteController.isLoading.value = true;
+                              await noteController.listNotes(
+                                widget.group.groupId,
+                              );
+                              noteController.isLoading.value = false;
+                            },
                             label: const Text('Refresh'),
                             icon: Icon(Icons.refresh),
                           ),
@@ -106,19 +115,21 @@ class _GroupNoteState extends State<GroupNote> {
                   return ListView.builder(
                     shrinkWrap: true,
                     physics: AlwaysScrollableScrollPhysics(),
-                    itemCount: noteController.groupNotes.length,
+                    itemCount: noteController.noteList.length,
                     itemBuilder: (context, index) {
-                      final note = noteController.groupNotes[index];
-
-                      return SizedBox(
-                        child: _buildNoteCard(
-                          noteId: note['note_id'] ?? '',
-                          text: note['text']!,
-                          owner: note['owner'] ?? '-N/A-',
-                          time: note['created_at'],
-                          status: note['status'],
-                        ),
+                      final note = noteController.noteList[index];
+                      return NoteCard(
+                        note: note,
+                        status: note['status'] ?? 'SUCCESS',
+                        groupId: widget.group.groupId,
                       );
+                      // _buildNoteCard(
+                      //   noteId: note['note_id'] ?? '',
+                      //   text: note['text']!,
+                      //   owner: note['owner'] ?? '-N/A-',
+                      //   time: note['created_at'],
+                      //   status: note['status'],
+                      // );
                     },
                   );
                 }),
@@ -131,167 +142,95 @@ class _GroupNoteState extends State<GroupNote> {
     );
   }
 
-  Widget _buildNoteCard({
-    required String text,
-    required int time,
-    required String noteId,
-    required String owner,
-    String? status,
-  }) {
-    bool loading = status == 'LOADING';
-    bool failed = status == 'FAILED';
-    bool isOwner = owner == currentUserEmail;
-    return Container(
-      constraints: BoxConstraints(maxWidth: w * 0.80),
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      decoration: BoxDecoration(
-        color: isOwner
-            ? ColorConst.groupPrimary.shade600
-            : ColorConst.groupPrimary,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isOwner ? '~ You' : '@$owner',
-                    style: Get.textTheme.bodySmall!.copyWith(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  Linkify(
-                    text: text,
-                    style: Get.textTheme.bodyMedium!.copyWith(
-                      color: Colors.white,
-                    ),
-                    onOpen: (link) async {
-                      final uri = Uri.parse(link.url);
-                      await launchUrl(uri);
-                    },
-                    linkStyle: Get.textTheme.bodyMedium!.copyWith(
-                      color: ColorConst.primaryColor,
-                      decoration: TextDecoration.underline,
-                      decorationColor: ColorConst.primaryColor,
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            loading
-                                ? Icons.access_time
-                                : failed
-                                ? Icons.error_outline
-                                : Icons.done,
-                            size: 12,
-                            color: failed ? Colors.red : Colors.grey.shade300,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            CustomWidgets().formatNoteTime(time),
-                            style: Get.textTheme.bodySmall!.copyWith(
-                              color: Colors.grey.shade300,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (isOwner)
-                        InkWell(
-                          onTap: () async {
-                            if (noteId.isEmpty) {
-                              noteController.loadGroupNotes(
-                                widget.group.groupId,
-                              );
-                              return;
-                            }
-                            bool result = await CustomWidgets.customAlertBox(
-                              title: 'Delete note',
-                              content:
-                                  'Are you sure you want to delete this note?',
-                            );
-                            if (result == true) {
-                              noteController.deletegroupNote(
-                                groupId: widget.group.groupId,
-                                noteId: noteId,
-                              );
-                            }
-                          },
-                          child: Icon(
-                            Icons.delete,
-                            size: 20,
-                            color: Colors.red,
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _notesInput() {
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: TextField(
-              // autofocus: true,
-              onChanged: (val) => noteController.noteTexts.value = val,
-              onTapOutside: (event) =>
-                  FocusManager.instance.primaryFocus!.unfocus(),
-              controller: textController,
-              textInputAction: TextInputAction.newline,
-              keyboardType: TextInputType.multiline,
-              textCapitalization: TextCapitalization.sentences,
-              minLines: 1,
-              maxLines: 6,
-              style: Get.textTheme.bodyMedium,
-              decoration: InputDecoration(
-                fillColor: Colors.grey.shade100,
-                hintText: "Type your note...",
-                hintStyle: Get.textTheme.bodyMedium!.copyWith(
-                  color: Colors.grey,
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          IconButton(
-            style: IconButton.styleFrom(
-              backgroundColor: ColorConst.groupPrimary,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {
-              if (noteController.noteTexts.value.isEmpty) {
-                return;
-              }
-              noteController.createGroupNote(
-                groupId: widget.group.groupId,
-                text: noteController.noteTexts.value,
+          Obx(() {
+            if (noteController.isEditingNote.value) {
+              return Row(
+                children: [
+                  Icon(Icons.edit, size: 16, color: ColorConst.primaryColor),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Editing Note',
+                    style: Get.textTheme.bodyMedium!.copyWith(
+                      color: ColorConst.primaryColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () {
+                      noteController.clearNoteEditing();
+                    },
+                    child: Text(
+                      'Cancel',
+                      style: Get.textTheme.bodyMedium!.copyWith(
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ],
               );
-              textController.clear();
-            },
-            icon: Icon(Icons.send_rounded),
+            }
+            return SizedBox.shrink();
+          }),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  focusNode: noteController.focusNode,
+                  onChanged: (val) => noteController.noteTexts.value = val,
+                  onTapOutside: (event) =>
+                      FocusManager.instance.primaryFocus!.unfocus(),
+                  controller: noteController.textController,
+                  textInputAction: TextInputAction.newline,
+                  keyboardType: TextInputType.multiline,
+                  textCapitalization: TextCapitalization.sentences,
+                  minLines: 1,
+                  maxLines: 6,
+                  style: Get.textTheme.bodyMedium,
+                  decoration: InputDecoration(
+                    fillColor: Colors.grey.shade100,
+                    hintText: "Type your note...",
+                    hintStyle: Get.textTheme.bodyMedium!.copyWith(
+                      color: Colors.grey,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              IconButton(
+                style: IconButton.styleFrom(
+                  backgroundColor: ColorConst.groupPrimary,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () async {
+                  final text = noteController.noteTexts.value.trim();
+                  if (text.isEmpty) return;
+                  noteController.textController.clear();
+                  noteController.noteTexts.value = '';
+                  if (noteController.isEditingNote.value) {
+                    await noteController.editNote(
+                      newText: text,
+                      noteId: noteController.editingNoteId!,
+                      groupId: widget.group.groupId,
+                    );
+                    noteController.isEditingNote.value = false;
+                    noteController.editingNoteId = null;
+                  } else {
+                    await noteController.createNote(
+                      text: text,
+                      groupId: widget.group.groupId,
+                    );
+                  }
+                },
+                icon: Icon(Icons.send_rounded),
+              ),
+            ],
           ),
         ],
       ),

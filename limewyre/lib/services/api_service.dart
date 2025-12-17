@@ -50,6 +50,21 @@ class ApiService extends GetConnect {
     return post("/deleteFromDB", body);
   }
 
+  Future<Response> editNote({
+    required String uid,
+    required String noteId,
+    required String newText,
+  }) async {
+    final body = {
+      "command": "updateNotes",
+      "index_name": "limewyre-notes-index",
+      "unique_id": uid,
+      "note_id": noteId,
+      "text": newText,
+    };
+    return post("/updateFromDB", body);
+  }
+
   Future<Response> queryQuestion({
     required List ids,
     required String question,

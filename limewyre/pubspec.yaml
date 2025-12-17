@@ -2,7 +2,7 @@ name: limewyre
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
   sdk: ^3.10.0
@@ -28,6 +28,7 @@ dependencies:
   shared_preferences: 
   url_launcher: ^6.3.2
   flutter_linkify: ^6.0.0
+  receive_sharing_intent: ^1.8.1
 
 dev_dependencies:
   flutter_test:

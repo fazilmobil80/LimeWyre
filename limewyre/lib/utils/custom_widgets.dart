@@ -57,7 +57,7 @@ class CustomWidgets {
     final Duration diff = now.difference(noteTime);
 
     if (diff.inSeconds < 30) {
-      return 'just now';
+      return 'Just now';
     }
 
     if (diff.inMinutes <= 1) {

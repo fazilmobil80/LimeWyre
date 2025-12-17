@@ -8,6 +8,7 @@ class ThemeController {
     primaryColor: ColorConst.primaryColor,
     cardColor: ColorConst.accent,
     appBarTheme: AppBarTheme(
+      centerTitle: false,
       backgroundColor: ColorConst.backgroundColor,
       elevation: 0,
       surfaceTintColor: Colors.transparent,

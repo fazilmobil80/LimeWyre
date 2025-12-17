@@ -4,6 +4,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:limewyre/models/user_model.dart';
 import 'package:limewyre/services/api_mutations.dart';
 import 'package:limewyre/services/api_queries.dart';
@@ -11,6 +12,7 @@ import 'package:limewyre/utils/global_variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController {
+  final box = Hive.box('limewyreCache');
   RxString authStatus = AuthStatus.initial.obs;
   RxBool isLoading = false.obs;
   RxString authError = ''.obs;
@@ -138,6 +140,7 @@ class AuthController extends GetxController {
     currentUserEmail = '';
     currentUserId = '';
     currentUser = null;
+    box.clear();
     authStatus.value = AuthStatus.initial;
     Get.offAllNamed("/auth");
     isLoading.value = false;

@@ -12,19 +12,24 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class GroupInfo extends StatelessWidget {
   final GroupController controller = Get.find<GroupController>();
-  final GroupItem group;
+  final GroupModel group;
 
   GroupInfo({super.key, required this.group});
 
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
+    bool isOwner = group.groupOwnerEmailId == currentUserEmail;
     return Scaffold(
       appBar: AppBar(leadingWidth: 50, title: Text('Group info')),
       body: Obx(() {
         return SingleChildScrollView(
           child: Column(
-            children: [headerSection(w), membersSection(), _actions()],
+            children: [
+              headerSection(w),
+              membersSection(isOwner),
+              _actions(isOwner),
+            ],
           ),
         );
       }),
@@ -59,7 +64,7 @@ class GroupInfo extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Created on • ${DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(group.userCreatedOn))}',
+            'Created on • ${DateFormat('dd/MM/yyyy').format(DateTime.fromMillisecondsSinceEpoch(group.groupCreatedOn))}',
             style: Get.textTheme.bodySmall!.copyWith(color: Colors.grey),
           ),
           // const SizedBox(height: 8),
@@ -78,7 +83,7 @@ class GroupInfo extends StatelessWidget {
     );
   }
 
-  Widget membersSection() {
+  Widget membersSection(bool isOwner) {
     return Card(
       color: Colors.white,
       child: Column(
@@ -91,7 +96,7 @@ class GroupInfo extends StatelessWidget {
               style: Get.textTheme.bodySmall,
             ),
           ),
-          if (group.userRole == 'OWNER')
+          if (isOwner)
             Obx(
               () => ListTile(
                 onTap: () async => Get.dialog(
@@ -144,10 +149,9 @@ class GroupInfo extends StatelessWidget {
               itemCount: controller.groupMembers.length,
               itemBuilder: (context, index) {
                 final item = controller.groupMembers[index];
-                bool isGroupOwner = group.userRole == 'OWNER';
                 bool isActive = item.userStatus == 'ACTIVE';
                 return ListTile(
-                  onTap: !isGroupOwner || item.userEmailId == currentUserEmail
+                  onTap: !isOwner || item.userEmailId == currentUserEmail
                       ? null
                       : () => Get.dialog(
                           _userInfo(
@@ -198,7 +202,7 @@ class GroupInfo extends StatelessWidget {
                                 ),
                               ),
                             )
-                          : group.userRole == 'OWNER'
+                          : item.userEmailId != currentUserEmail
                           ? Icon(Icons.arrow_right, size: 25)
                           : SizedBox.shrink(),
                     ],
@@ -230,7 +234,7 @@ class GroupInfo extends StatelessWidget {
     );
   }
 
-  Widget _actions() {
+  Widget _actions(bool isOwner) {
     return Card(
       color: Colors.white,
       child: Obx(() {
@@ -248,7 +252,7 @@ class GroupInfo extends StatelessWidget {
                         content: 'Are you sure you want to leave this group?',
                       );
                       if (result == true) {
-                        if (group.userRole == 'OWNER') {
+                        if (isOwner) {
                           Fluttertoast.showToast(
                             msg:
                                 'Transfer your ownership to other user before exiting the group.',
@@ -268,7 +272,7 @@ class GroupInfo extends StatelessWidget {
                 ),
               ),
             ),
-            if (group.userRole == 'OWNER')
+            if (isOwner)
               ListTile(
                 onTap: controller.removingGroup.value
                     ? null

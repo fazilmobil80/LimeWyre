@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:limewyre/amplifyconfiguration.dart';
 import 'package:limewyre/appModules/auth/auth_controller.dart';
 import 'package:limewyre/utils/app_pages.dart';
@@ -15,8 +16,8 @@ import 'dart:developer';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Hive.initFlutter();
-  // await Hive.openBox('limewyreCache');
+  await Hive.initFlutter();
+  await Hive.openBox('limewyreCache');
   Get.put(AuthController());
   Get.put(ThemeController());
   initShareListener();

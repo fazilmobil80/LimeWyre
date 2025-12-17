@@ -1,6 +1,8 @@
+import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 class IntentShare {
   static String? sharedText;
@@ -20,31 +22,52 @@ class IntentShare {
   }
 }
 
-const _shareChannel = MethodChannel('limewyre/share');
+// const _shareChannel = MethodChannel('limewyre/share');
+
+StreamSubscription? _shareSub;
 
 void initShareListener() {
-  _shareChannel.setMethodCallHandler((call) async {
-    if (call.method == 'sharedData') {
-      final Map data = Map.from(call.arguments);
+  // App already running / background
+  _shareSub = ReceiveSharingIntent.instance.getMediaStream().listen((value) {
+    _handleSharedMedia(value);
+  });
+  // _handleSharedMedia,
+  // onError: (err) {
+  //   log('Share stream error: $err');
+  // },
+  // );
 
-      final type = data['type'];
-      final value = data['value'];
-
-      if (type == 'text') {
-        IntentShare.setFromShare(text: value);
-      } else if (type == 'file') {
-        IntentShare.setFromShare(files: [value]);
-      } else if (type == 'files') {
-        IntentShare.setFromShare(files: List<String>.from(value));
-      }
-      _navigateToNotePage();
+  // Cold start (VERY IMPORTANT for iOS)
+  ReceiveSharingIntent.instance.getInitialMedia().then((value) {
+    if (value.isNotEmpty) {
+      _handleSharedMedia(value);
+      ReceiveSharingIntent.instance.reset();
     }
   });
 }
 
+void disposeShareListener() {
+  _shareSub?.cancel();
+}
+
+void _handleSharedMedia(List<SharedMediaFile> files) {
+  if (files.isEmpty) return;
+
+  // For simplicity, we only handle the first file's path as text.. check the f.type for handling different types.
+
+  final paths = files.map((f) => f.path).toList();
+
+  IntentShare.setFromShare(text: paths.first, files: paths);
+
+  log('Shared files received: $paths');
+
+  _navigateToNotePage();
+}
+
 void _navigateToNotePage() {
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    // Navigator.of(context).popUntil((route) => route.isFirst);
-    Get.toNamed('/splash', arguments: {'fromShare': true});
+    if (Get.currentRoute != '/splash') {
+      Get.offAllNamed('/splash', arguments: {'fromShare': true});
+    }
   });
 }

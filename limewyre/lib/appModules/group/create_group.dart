@@ -14,6 +14,7 @@ class CreateGroupDialog extends StatelessWidget {
     final formkey = GlobalKey<FormState>();
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

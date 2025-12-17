@@ -15,6 +15,7 @@ class InviteMember extends StatelessWidget {
     final formkey = GlobalKey<FormState>();
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -33,6 +34,7 @@ class InviteMember extends StatelessWidget {
               child: TextFormField(
                 controller: memberEmail,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
+                keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (!RegExp(
                     r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",

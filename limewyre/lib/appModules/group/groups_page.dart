@@ -5,6 +5,7 @@ import 'package:limewyre/appModules/group/group_controller.dart';
 import 'package:limewyre/appModules/group/group_note.dart';
 import 'package:limewyre/models/groups_model.dart';
 import 'package:limewyre/utils/const_page.dart';
+import 'package:limewyre/utils/global_variables.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class GroupsPage extends StatelessWidget {
@@ -68,8 +69,8 @@ class GroupsPage extends StatelessWidget {
     );
   }
 
-  Widget _groupCard({required GroupItem group}) {
-    bool isowner = group.userRole == 'OWNER';
+  Widget _groupCard({required GroupModel group}) {
+    bool isowner = group.groupOwnerEmailId == currentUserEmail;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -96,31 +97,42 @@ class GroupsPage extends StatelessWidget {
           ),
           child: const Icon(Icons.group, size: 28, color: Color(0xFF22C55E)),
         ),
-        title: Text(
-          group.groupName,
-          overflow: TextOverflow.ellipsis,
-          softWrap: true,
-          style: Get.textTheme.bodyMedium!.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        // subtitle: Text(
-        //   'Tap to add notes',
-        //   style: Get.textTheme.bodySmall!.copyWith(color: Colors.grey),
-        // ),
-        trailing: isowner
-            ? Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        title: Row(
+          children: [
+            Text(
+              group.groupName,
+              overflow: TextOverflow.ellipsis,
+              softWrap: true,
+              style: Get.textTheme.bodyMedium!.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            if (isowner) ...[
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: ColorConst.groupPrimary,
+                  color: ColorConst.groupPrimary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   'Owner',
-                  style: Get.textTheme.bodySmall!.copyWith(color: Colors.white),
+                  style: Get.textTheme.bodySmall!.copyWith(
+                    color: ColorConst.groupPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              )
-            : null,
+              ),
+            ],
+          ],
+        ),
+        subtitle: Text(
+          group.totalMembers == 1
+              ? '${group.totalMembers} member'
+              : '${group.totalMembers} members',
+          style: Get.textTheme.bodySmall!.copyWith(color: Colors.grey),
+        ),
+        trailing: Icon(Icons.arrow_right),
       ),
     );
   }
