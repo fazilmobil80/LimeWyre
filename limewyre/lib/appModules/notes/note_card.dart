@@ -26,7 +26,7 @@ class NoteCard extends StatelessWidget {
       color: isGroup ? ColorConst.groupPrimary : Colors.white,
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
         child: Row(
           children: [
             Expanded(
@@ -40,6 +40,10 @@ class NoteCard extends StatelessWidget {
                         note['owner'] == currentUserEmail
                             ? '@You'
                             : "@${note['owner']}",
+                        style: Get.textTheme.bodySmall!.copyWith(
+                          color: Colors.grey.shade800,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   Linkify(
@@ -59,101 +63,109 @@ class NoteCard extends StatelessWidget {
                           : Colors.blue,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            loading
-                                ? Icons.access_time
-                                : failed
-                                ? Icons.error_outline
-                                : Icons.done,
-                            size: 12,
-                            color: failed
-                                ? Colors.red
-                                : isGroup
-                                ? Colors.grey.shade300
-                                : Colors.grey.shade400,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            CustomWidgets().formatNoteTime(note['created_at']),
-                            style: Get.textTheme.bodySmall!.copyWith(
-                              color: isGroup
-                                  ? Colors.grey.shade300
+
+                  Padding(
+                    padding: note['owner'] == currentUserEmail
+                        ? EdgeInsets.zero
+                        : const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              loading
+                                  ? Icons.access_time
+                                  : failed
+                                  ? Icons.error_outline
+                                  : Icons.done,
+                              size: 12,
+                              color: failed
+                                  ? Colors.red
+                                  : isGroup
+                                  ? Colors.white54
                                   : Colors.grey.shade400,
                             ),
-                          ),
-                        ],
-                      ),
-                      if (note['owner'] == currentUserEmail)
-                        PopupMenuButton(
-                          tooltip: 'More options',
-                          menuPadding: EdgeInsets.zero,
-                          color: Colors.white,
-                          icon: isGroup
-                              ? Icon(
-                                  Icons.more_vert,
-                                  color: loading
-                                      ? ColorConst.groupPrimary
-                                      : Colors.grey.shade300,
-                                )
-                              : Icon(
-                                  Icons.more_vert,
-                                  color: loading
-                                      ? Colors.white
-                                      : Colors.grey.shade600,
-                                ),
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              child: ListTile(
-                                leading: Icon(Icons.edit),
-                                title: Text('Edit'),
-                                onTap: () async {
-                                  Get.back();
-                                  controller.textController.text =
-                                      note['text'] ??
-                                      note['resolved_text'] ??
-                                      '';
-                                  controller.noteTexts.value =
-                                      note['text'] ??
-                                      note['resolved_text'] ??
-                                      '';
-                                  controller.editingNoteId = note['note_id'];
-                                  controller.focusNode.requestFocus();
-                                  controller.isEditingNote.value = true;
-                                },
+                            const SizedBox(width: 6),
+                            Text(
+                              CustomWidgets().formatNoteTime(
+                                note['created_at'],
                               ),
-                            ),
-
-                            PopupMenuItem(
-                              child: ListTile(
-                                leading: Icon(Icons.delete, color: Colors.red),
-                                title: Text('Delete'),
-                                onTap: () async {
-                                  Get.back();
-                                  bool
-                                  result = await CustomWidgets.customAlertBox(
-                                    title: 'Delete note',
-                                    content:
-                                        'Are you sure you want to delete this note?',
-                                  );
-                                  if (result == true) {
-                                    controller.deleteNote(
-                                      noteId: note['note_id'],
-                                      groupId: groupId,
-                                    );
-                                  }
-                                },
+                              style: Get.textTheme.bodySmall!.copyWith(
+                                color: isGroup
+                                    ? Colors.white54
+                                    : Colors.grey.shade400,
                               ),
                             ),
                           ],
                         ),
-                    ],
+                        if (note['owner'] == currentUserEmail)
+                          PopupMenuButton(
+                            menuPadding: EdgeInsets.zero,
+                            color: Colors.white,
+                            icon: isGroup
+                                ? Icon(
+                                    Icons.more_vert,
+                                    color: loading
+                                        ? ColorConst.groupPrimary
+                                        : Colors.grey.shade300,
+                                  )
+                                : Icon(
+                                    Icons.more_vert,
+                                    color: loading
+                                        ? Colors.white
+                                        : Colors.grey.shade600,
+                                  ),
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                child: ListTile(
+                                  leading: Icon(Icons.edit),
+                                  title: Text('Edit'),
+                                  onTap: () async {
+                                    Get.back();
+                                    controller.textController.text =
+                                        note['text'] ??
+                                        note['resolved_text'] ??
+                                        '';
+                                    controller.noteTexts.value =
+                                        note['text'] ??
+                                        note['resolved_text'] ??
+                                        '';
+                                    controller.editingNoteId = note['note_id'];
+                                    controller.focusNode.requestFocus();
+                                    controller.isEditingNote.value = true;
+                                  },
+                                ),
+                              ),
+
+                              PopupMenuItem(
+                                child: ListTile(
+                                  leading: Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  title: Text('Delete'),
+                                  onTap: () async {
+                                    Get.back();
+                                    bool
+                                    result = await CustomWidgets.customAlertBox(
+                                      title: 'Delete note',
+                                      content:
+                                          'Are you sure you want to delete this note?',
+                                    );
+                                    if (result == true) {
+                                      controller.deleteNote(
+                                        noteId: note['note_id'],
+                                        groupId: groupId,
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
                   ),
                 ],
               ),

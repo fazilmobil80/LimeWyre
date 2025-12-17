@@ -64,12 +64,11 @@ class NotesController extends GetxController {
       'owner': currentUserEmail,
     });
     final res = await ApiService().createNote(
-      uid: groupId ?? currentUserId, //TODO: check this
+      uid: groupId ?? currentUserEmail,
       text: text,
       email: currentUserEmail,
     );
     if (res.isOk) {
-      log('NOTE RESPONCE === ${res.body}');
       listNotes(groupId);
       noteList[0]['status'] = 'SUCCESS';
     } else {
@@ -112,7 +111,7 @@ class NotesController extends GetxController {
 
   Future<void> deleteNote({required String noteId, String? groupId}) async {
     final res = await ApiService().deleteNote(
-      uid: groupId ?? currentUserEmail, //TODO: check this
+      uid: groupId ?? currentUserEmail,
       noteId: noteId,
     );
     if (res.isOk) {
