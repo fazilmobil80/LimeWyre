@@ -45,12 +45,13 @@ class _GroupNoteState extends State<GroupNote> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Add note'),
+            // Text('Add note'),
+            Text(widget.group.groupName),
             Obx(
               () => Text(
-                groupController.groupMembers.length <= 1
-                    ? widget.group.groupName
-                    : "${widget.group.groupName} • ${groupController.groupMembers.length} members",
+                groupController.groupMembers
+                    .map((m) => m.userEmailId.split('@').first)
+                    .join(', '),
                 style: Get.textTheme.bodySmall!.copyWith(color: Colors.grey),
               ),
             ),
@@ -75,6 +76,18 @@ class _GroupNoteState extends State<GroupNote> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Add a note (${widget.group.groupName})',
+                    style: Get.textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                ],
+              ),
               Expanded(
                 child: Obx(() {
                   if (noteController.isLoading.value) {

@@ -29,15 +29,18 @@ class AiController extends GetxController {
   RxString messageText = ''.obs;
 
   Future queryQuestions({required String question}) async {
-    List ids = [
-      currentUser!.userEmailId,
-      currentUserId,
-      ...currentUser!.groupIds,
-    ];
+    // List ids = [
+    //   currentUser!.userEmailId,
+    //   // currentUserId,
+    //   ...currentUser!.groupIds,
+    // ];
     aiChat.add({'text': question});
     scrollToBottom();
     aiChat.add({'text': 'is_thinking'});
-    final res = await ApiService().queryQuestion(ids: ids, question: question);
+    final res = await ApiService().queryQuestion(
+      ids: [currentUserEmail, ...currentUser!.groupIds],
+      question: question,
+    );
     if (res.isOk) {
       aiChat.removeLast();
       aiChat.add({'text': res.body['answer'], 'source': res.body['source']});

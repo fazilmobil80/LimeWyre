@@ -57,24 +57,18 @@ class _PersonalNotesState extends State<PersonalNotes> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Column(
-              //   crossAxisAlignment: CrossAxisAlignment.start,
-              //   children: [
-              // Text(
-              //   'Recent Notes',
-              //   style: Get.textTheme.titleMedium!.copyWith(
-              //     fontWeight: FontWeight.bold,
-              //   ),
-              // ),
-              //     const SizedBox(height: 5),
-              //     Obx(
-              //       () => Text(
-              //         '${controller.noteList.length} Notes',
-              //         style: Get.textTheme.titleSmall!,
-              //       ),
-              //     ),
-              //   ],
-              // ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Add a personal note',
+                    style: Get.textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                ],
+              ),
               Expanded(
                 child: Obx(() {
                   if (controller.isLoading.value) {

@@ -117,6 +117,7 @@ class NotesController extends GetxController {
     if (res.isOk) {
       Fluttertoast.showToast(msg: 'Note deleted');
       noteList.removeWhere((element) => element['note_id'] == noteId);
+      listNotes(groupId);
     } else {
       log("Error deleting notes : ${res.statusText}'}");
     }

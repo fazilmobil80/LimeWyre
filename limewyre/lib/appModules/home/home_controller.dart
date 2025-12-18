@@ -18,7 +18,7 @@ class HomeController extends GetxController {
     },
     {
       'label': 'Ask',
-      'title': 'Ask from your notes',
+      'title': 'Query from your notes',
       'icon': Icons.auto_awesome,
       'page': AskAiPage(),
     },
