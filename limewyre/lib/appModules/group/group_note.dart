@@ -47,14 +47,20 @@ class _GroupNoteState extends State<GroupNote> {
           children: [
             // Text('Add note'),
             Text(widget.group.groupName),
-            Obx(
-              () => Text(
-                groupController.groupMembers
-                    .map((m) => m.userEmailId.split('@').first)
-                    .join(', '),
+            Obx(() {
+              return Text(
+                groupController.membersLoading.value
+                    ? 'Loading members...'
+                    : groupController.groupMembers
+                          .map(
+                            (m) => m.userEmailId == currentUserEmail
+                                ? "You"
+                                : m.userEmailId.split('@').first.capitalize,
+                          )
+                          .join(', '),
                 style: Get.textTheme.bodySmall!.copyWith(color: Colors.grey),
-              ),
-            ),
+              );
+            }),
           ],
         ),
         actions: [
