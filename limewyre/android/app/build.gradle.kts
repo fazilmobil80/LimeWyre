@@ -1,9 +1,17 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+dependencies {
+    implementation("com.google.errorprone:error_prone_annotations:2.23.0")
+    compileOnly("javax.annotation:javax.annotation-api:1.3.2")
+}
+
 
 kotlin {
     jvmToolchain(17)
@@ -22,6 +30,7 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+    
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
@@ -34,13 +43,29 @@ android {
         versionName = flutter.versionName
     }
 
-    buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
-        }
+    signingConfigs {
+    create("release") {
+        storeFile = file("limewyre.jks")
+        storePassword = System.getenv("STORE_PASSWORD")
+        keyAlias = "limewyre"
+        keyPassword = System.getenv("KEY_PASSWORD")
     }
+}
+
+
+    buildTypes {
+    getByName("release") {
+        isMinifyEnabled = true
+        isShrinkResources = true
+        proguardFiles(
+            getDefaultProguardFile("proguard-android-optimize.txt"),
+            "proguard-rules.pro"
+        )
+        signingConfig = signingConfigs.getByName("release")
+    }
+}
+
+
 }
 
 flutter {
