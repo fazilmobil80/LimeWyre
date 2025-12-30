@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:limewyre/appModules/group/group_controller.dart';
 import 'package:limewyre/appModules/group/invite_member.dart';
@@ -20,6 +23,7 @@ class GroupInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
     bool isOwner = group.groupOwnerEmailId == currentUserEmail;
+    log('aaaabbbb === ${group.groupId}');
     return Scaffold(
       appBar: AppBar(leadingWidth: 50, title: Text('Group info')),
       body: Obx(() {
@@ -153,6 +157,8 @@ class GroupInfo extends StatelessWidget {
                 return ListTile(
                   onTap: !isOwner || item.userEmailId == currentUserEmail
                       ? null
+                      : !isOwner
+                      ? null
                       : () => Get.dialog(
                           _userInfo(
                             userEmail: item.userEmailId,
@@ -180,29 +186,36 @@ class GroupInfo extends StatelessWidget {
                           item.userEmailId == currentUserEmail
                               ? 'You'
                               : item.userEmailId,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
                           style: Get.textTheme.bodyMedium!.copyWith(
                             color: !isActive ? Colors.grey : null,
                           ),
                         ),
                       ),
                       item.userRole == 'OWNER'
-                          ? Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: ColorConst.groupPrimary,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                'Owner',
-                                style: Get.textTheme.bodySmall!.copyWith(
-                                  color: Colors.white,
-                                ),
-                              ),
+                          ? Icon(
+                              Iconsax.star1,
+                              size: 25,
+                              color: ColorConst.groupPrimary,
                             )
-                          : item.userEmailId != currentUserEmail
+                          // Container(
+                          //     padding: const EdgeInsets.symmetric(
+                          //       horizontal: 8,
+                          //       vertical: 2,
+                          //     ),
+                          //     decoration: BoxDecoration(
+                          //       color: ColorConst.groupPrimary,
+                          //       borderRadius: BorderRadius.circular(8),
+                          //     ),
+                          //     child: Text(
+                          //       'Owner',
+                          //       style: Get.textTheme.bodySmall!.copyWith(
+                          //         color: Colors.white,
+                          //       ),
+                          //     ),
+                          //   )
+                          : item.userEmailId != currentUserEmail && isOwner
                           ? Icon(Icons.arrow_right, size: 25)
                           : SizedBox.shrink(),
                     ],

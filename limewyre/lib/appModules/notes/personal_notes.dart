@@ -57,18 +57,6 @@ class _PersonalNotesState extends State<PersonalNotes> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Add a personal note',
-                    style: Get.textTheme.titleMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                ],
-              ),
               Expanded(
                 child: Obx(() {
                   if (controller.isLoading.value) {
@@ -80,26 +68,7 @@ class _PersonalNotesState extends State<PersonalNotes> {
                     );
                   }
                   if (controller.noteList.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('No Notes added!'),
-                          TextButton.icon(
-                            style: TextButton.styleFrom(
-                              foregroundColor: ColorConst.primaryColor,
-                            ),
-                            onPressed: () async {
-                              controller.isLoading.value = true;
-                              await controller.listNotes(null);
-                              controller.isLoading.value = false;
-                            },
-                            label: const Text('Refresh'),
-                            icon: Icon(Icons.refresh),
-                          ),
-                        ],
-                      ),
-                    );
+                    return Center(child: _emptyNote());
                   }
                   return ListView.builder(
                     shrinkWrap: true,
@@ -169,13 +138,15 @@ class _PersonalNotesState extends State<PersonalNotes> {
                 onChanged: (val) => controller.noteTexts.value = val,
                 minLines: 1,
                 maxLines: 6,
+                maxLength: 2500,
                 textInputAction: TextInputAction.newline,
                 textCapitalization: TextCapitalization.sentences,
                 keyboardType: TextInputType.multiline,
                 style: Get.textTheme.bodyMedium,
                 decoration: InputDecoration(
+                  counterText: '',
                   fillColor: Colors.grey.shade100,
-                  hintText: "Type your note...",
+                  hintText: "Add a personal note...",
                   hintStyle: Get.textTheme.bodyMedium!.copyWith(
                     color: Colors.grey,
                   ),
@@ -212,6 +183,69 @@ class _PersonalNotesState extends State<PersonalNotes> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _emptyNote() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () {
+              controller.focusNode.requestFocus();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: ColorConst.primaryColor.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.post_add_rounded,
+                size: 36,
+                color: ColorConst.primaryColor,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          Text(
+            'No notes yet',
+            style: Get.textTheme.bodyLarge!.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 6),
+
+          Text(
+            'Start adding you thoughts and moments..',
+            textAlign: TextAlign.center,
+            style: Get.textTheme.bodyMedium!.copyWith(
+              color: Colors.grey.shade500,
+            ),
+          ),
+          // const SizedBox(height: 24),
+
+          // ElevatedButton.icon(
+          //   style: ElevatedButton.styleFrom(
+          //     backgroundColor: ColorConst.primaryColor,
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(12),
+          //     ),
+          //     elevation: 0,
+          //   ),
+          //   onPressed: () {},
+          //   icon: const Icon(Icons.add),
+          //   label: const Text(
+          //     'Add Note',
+          //     style: TextStyle(fontWeight: FontWeight.w600),
+          //   ),
+          // ),
+        ],
+      ),
     );
   }
 }

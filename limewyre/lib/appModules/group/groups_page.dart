@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:limewyre/appModules/group/create_group.dart';
 import 'package:limewyre/appModules/group/group_controller.dart';
 import 'package:limewyre/appModules/group/group_note.dart';
@@ -39,22 +40,7 @@ class GroupsPage extends StatelessWidget {
             );
           }
           if (controller.groups.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('No Groups added'),
-                  TextButton.icon(
-                    style: TextButton.styleFrom(
-                      foregroundColor: ColorConst.groupPrimary,
-                    ),
-                    onPressed: () async => controller.listGroups(),
-                    label: const Text('Refresh'),
-                    icon: Icon(Icons.refresh),
-                  ),
-                ],
-              ),
-            );
+            return Center(child: _emptyGroups());
           }
           return ListView.builder(
             padding: const EdgeInsets.all(12),
@@ -107,23 +93,23 @@ class GroupsPage extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            if (isowner) ...[
-              const SizedBox(width: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: ColorConst.groupPrimary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  'Owner',
-                  style: Get.textTheme.bodySmall!.copyWith(
-                    color: ColorConst.groupPrimary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
+            // if (isowner) ...[
+            //   const SizedBox(width: 5),
+            //   Container(
+            //     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            //     decoration: BoxDecoration(
+            //       color: ColorConst.groupPrimary.withValues(alpha: 0.1),
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     child: Text(
+            //       'Owner',
+            //       style: Get.textTheme.bodySmall!.copyWith(
+            //         color: ColorConst.groupPrimary,
+            //         fontWeight: FontWeight.w500,
+            //       ),
+            //     ),
+            //   ),
+            // ],
           ],
         ),
         subtitle: Text(
@@ -132,7 +118,54 @@ class GroupsPage extends StatelessWidget {
               : '${group.totalMembers} members',
           style: Get.textTheme.bodySmall!.copyWith(color: Colors.grey),
         ),
-        trailing: Icon(Icons.arrow_right),
+        trailing: isowner
+            ? Icon(Iconsax.star1, size: 25, color: ColorConst.groupPrimary)
+            : null,
+      ),
+    );
+  }
+
+  Widget _emptyGroups() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () =>
+                Get.dialog(barrierDismissible: false, CreateGroupDialog()),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: ColorConst.groupPrimary.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.post_add_rounded,
+                size: 36,
+                color: ColorConst.groupPrimary,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          Text(
+            'No Groups added',
+            style: Get.textTheme.bodyLarge!.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 6),
+
+          Text(
+            'Create groups and start collaborating with your people',
+            textAlign: TextAlign.center,
+            style: Get.textTheme.bodyMedium!.copyWith(
+              color: Colors.grey.shade500,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -125,7 +125,7 @@ class AskAiPage extends StatelessWidget {
             style: Get.textTheme.bodyMedium,
             decoration: InputDecoration(
               fillColor: Colors.grey.shade100,
-              hintText: "Type your question...",
+              hintText: "Ask from your notes...",
               hintStyle: Get.textTheme.bodyMedium!.copyWith(color: Colors.grey),
               contentPadding: const EdgeInsets.symmetric(horizontal: 10),
             ),
@@ -139,11 +139,12 @@ class AskAiPage extends StatelessWidget {
               foregroundColor: Colors.white,
             ),
             onPressed:
-                controller.aiChat.isNotEmpty &&
-                    controller.aiChat.last['text'] == 'Thinking...'
+                (controller.aiChat.isNotEmpty &&
+                    controller.aiChat.last['text'] == 'Thinking...')
                 ? null
                 : () {
-                    if (controller.messageText.value.isEmpty) {
+                    if (controller.messageText.value.isEmpty ||
+                        textController.text.isEmpty) {
                       return;
                     }
                     // controller.sendMessage();

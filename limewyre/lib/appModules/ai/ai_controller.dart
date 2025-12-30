@@ -29,11 +29,6 @@ class AiController extends GetxController {
   RxString messageText = ''.obs;
 
   Future queryQuestions({required String question}) async {
-    // List ids = [
-    //   currentUser!.userEmailId,
-    //   // currentUserId,
-    //   ...currentUser!.groupIds,
-    // ];
     aiChat.add({'text': question});
     scrollToBottom();
     aiChat.add({'text': 'is_thinking'});
@@ -45,7 +40,6 @@ class AiController extends GetxController {
       aiChat.removeLast();
       aiChat.add({'text': res.body['answer'], 'source': res.body['source']});
       scrollToBottom();
-      log('QUERY == ${res.body}');
     } else {
       aiChat.removeLast();
       aiChat.add({'text': ''});

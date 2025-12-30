@@ -14,6 +14,9 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
 
+//amplify remove codegen
+//amplify codegen add --apiId 5z5xoszzdndtpjbnpfvvwxcfsi
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();

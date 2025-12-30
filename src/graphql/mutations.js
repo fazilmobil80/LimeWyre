@@ -46,3 +46,8 @@ export const DeleteMyAccount = /* GraphQL */ `
     DeleteMyAccount
   }
 `;
+export const UpdateMyDetails = /* GraphQL */ `
+  mutation UpdateMyDetails($input: UpdateMyDetailsInput) {
+    UpdateMyDetails(input: $input)
+  }
+`;

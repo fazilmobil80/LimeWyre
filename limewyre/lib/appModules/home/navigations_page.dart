@@ -49,6 +49,9 @@ class NavigationsPage extends StatelessWidget {
           // ),
           IconButton(
             onPressed: () => Get.to(() => NotificationsPage()),
+            // onPressed: () async {
+            //   await controller.createCustomNotes();
+            // },
             icon: Icon(Icons.notifications_rounded),
           ),
         ],

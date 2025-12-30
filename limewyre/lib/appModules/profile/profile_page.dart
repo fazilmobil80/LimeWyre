@@ -72,30 +72,28 @@ class ProfilePage extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 24),
-
-                  // Stats
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildStat(user.totalNotesCount.toString(), "Notes"),
-                      _buildStat(
-                        user.groupNotesCount.toString(),
-                        "Group Notes",
-                      ),
-                      _buildStat(
-                        DateTime.now()
-                            .difference(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                user.userCreatedOn,
-                              ),
-                            )
-                            .inDays
-                            .toString(),
-                        "Days",
-                      ),
-                    ],
-                  ),
+                  // const SizedBox(height: 24),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: [
+                  //     _buildStat(user.totalNotesCount.toString(), "Notes"),
+                  //     _buildStat(
+                  //       user.groupNotesCount.toString(),
+                  //       "Group Notes",
+                  //     ),
+                  //     _buildStat(
+                  //       DateTime.now()
+                  //           .difference(
+                  //             DateTime.fromMillisecondsSinceEpoch(
+                  //               user.userCreatedOn,
+                  //             ),
+                  //           )
+                  //           .inDays
+                  //           .toString(),
+                  //       "Days",
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),

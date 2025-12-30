@@ -14,7 +14,7 @@ class SourcesDropdown extends StatefulWidget {
 }
 
 class _SourcesDropdownState extends State<SourcesDropdown> {
-  bool expanded = true;
+  bool expanded = false;
 
   @override
   Widget build(BuildContext context) {

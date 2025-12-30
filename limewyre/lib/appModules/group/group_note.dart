@@ -42,33 +42,43 @@ class _GroupNoteState extends State<GroupNote> {
         shadowColor: Colors.black,
         elevation: 1,
         leadingWidth: 50,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Text('Add note'),
-            Text(widget.group.groupName),
-            Obx(() {
-              return Text(
-                groupController.membersLoading.value
-                    ? 'Loading members...'
-                    : groupController.groupMembers
-                          .map(
-                            (m) => m.userEmailId == currentUserEmail
-                                ? "You"
-                                : m.userEmailId.split('@').first.capitalize,
-                          )
-                          .join(', '),
-                style: Get.textTheme.bodySmall!.copyWith(color: Colors.grey),
-              );
-            }),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => Get.to(() => GroupInfo(group: widget.group)),
-            icon: Icon(Icons.info_outline),
+        title: InkWell(
+          onTap: () => Get.to(() => GroupInfo(group: widget.group)),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.group.groupName),
+                    Obx(() {
+                      return Text(
+                        groupController.membersLoading.value
+                            ? 'Loading members...'
+                            : groupController.groupMembers
+                                  .map(
+                                    (m) => m.userEmailId == currentUserEmail
+                                        ? "You"
+                                        : m.userEmailId
+                                              .split('@')
+                                              .first
+                                              .capitalize,
+                                  )
+                                  .join(', '),
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        style: Get.textTheme.bodySmall!.copyWith(
+                          color: Colors.grey,
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -82,18 +92,6 @@ class _GroupNoteState extends State<GroupNote> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Add a note (${widget.group.groupName})',
-                    style: Get.textTheme.titleMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                ],
-              ),
               Expanded(
                 child: Obx(() {
                   if (noteController.isLoading.value) {
@@ -105,28 +103,7 @@ class _GroupNoteState extends State<GroupNote> {
                     );
                   }
                   if (noteController.noteList.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('No Notes added!'),
-                          TextButton.icon(
-                            style: TextButton.styleFrom(
-                              foregroundColor: ColorConst.groupPrimary,
-                            ),
-                            onPressed: () async {
-                              noteController.isLoading.value = true;
-                              await noteController.listNotes(
-                                widget.group.groupId,
-                              );
-                              noteController.isLoading.value = false;
-                            },
-                            label: const Text('Refresh'),
-                            icon: Icon(Icons.refresh),
-                          ),
-                        ],
-                      ),
-                    );
+                    return Center(child: _emptyNote());
                   }
                   return ListView.builder(
                     shrinkWrap: true,
@@ -139,13 +116,6 @@ class _GroupNoteState extends State<GroupNote> {
                         status: note['status'] ?? 'SUCCESS',
                         groupId: widget.group.groupId,
                       );
-                      // _buildNoteCard(
-                      //   noteId: note['note_id'] ?? '',
-                      //   text: note['text']!,
-                      //   owner: note['owner'] ?? '-N/A-',
-                      //   time: note['created_at'],
-                      //   status: note['status'],
-                      // );
                     },
                   );
                 }),
@@ -207,10 +177,12 @@ class _GroupNoteState extends State<GroupNote> {
                   textCapitalization: TextCapitalization.sentences,
                   minLines: 1,
                   maxLines: 6,
+                  maxLength: 2500,
                   style: Get.textTheme.bodyMedium,
                   decoration: InputDecoration(
+                    counterText: '',
                     fillColor: Colors.grey.shade100,
-                    hintText: "Type your note...",
+                    hintText: "Add a note in ${widget.group.groupName}...",
                     hintStyle: Get.textTheme.bodyMedium!.copyWith(
                       color: Colors.grey,
                     ),
@@ -247,6 +219,52 @@ class _GroupNoteState extends State<GroupNote> {
                 icon: Icon(Icons.send_rounded),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _emptyNote() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () {
+              noteController.focusNode.requestFocus();
+            },
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: ColorConst.groupPrimary.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.post_add_rounded,
+                size: 36,
+                color: ColorConst.groupPrimary,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          Text(
+            'No notes yet',
+            style: Get.textTheme.bodyLarge!.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 6),
+
+          Text(
+            'Start adding you thoughts and moments..',
+            textAlign: TextAlign.center,
+            style: Get.textTheme.bodyMedium!.copyWith(
+              color: Colors.grey.shade500,
+            ),
           ),
         ],
       ),

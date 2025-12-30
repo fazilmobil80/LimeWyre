@@ -32,6 +32,7 @@ class NotesController extends GetxController {
   final RxList noteList = [].obs;
   RxBool isLoading = false.obs;
   Future<void> loadNotes(String? groupId) async {
+    noteList.clear();
     final cachedNotes = box.get(groupId ?? 'notes');
     if (cachedNotes != null) {
       final cachedData = jsonDecode(cachedNotes);
@@ -98,7 +99,7 @@ class NotesController extends GetxController {
       newText: newText,
     );
     if (res.isOk) {
-      Fluttertoast.showToast(msg: 'Note edited');
+      // Fluttertoast.showToast(msg: 'Note edited');
       listNotes(groupId);
     } else {
       if (index != -1) {
@@ -110,15 +111,19 @@ class NotesController extends GetxController {
   }
 
   Future<void> deleteNote({required String noteId, String? groupId}) async {
+    noteList.removeWhere((element) => element['note_id'] == noteId);
     final res = await ApiService().deleteNote(
       uid: groupId ?? currentUserEmail,
       noteId: noteId,
     );
     if (res.isOk) {
-      Fluttertoast.showToast(msg: 'Note deleted');
-      noteList.removeWhere((element) => element['note_id'] == noteId);
+      log("Note deleted: ${res.body}");
       listNotes(groupId);
     } else {
+      Fluttertoast.showToast(
+        msg: res.statusText ?? "Something went wrong",
+        backgroundColor: Colors.red,
+      );
       log("Error deleting notes : ${res.statusText}'}");
     }
   }

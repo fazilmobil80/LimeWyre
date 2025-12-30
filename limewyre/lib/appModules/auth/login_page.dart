@@ -64,7 +64,6 @@ class LoginPage extends StatelessWidget {
 
               Obx(() {
                 final formkey = GlobalKey<FormState>();
-                final otpController = TextEditingController();
                 return Container(
                   width: w * 0.9,
                   padding: const EdgeInsets.symmetric(
@@ -125,7 +124,6 @@ class LoginPage extends StatelessWidget {
                                 onPressed: () {
                                   controller.authStatus.value =
                                       AuthStatus.initial;
-                                  otpController.clear();
                                 },
                                 child: Text('Edit'),
                               );
@@ -167,56 +165,11 @@ class LoginPage extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 20),
-                      if (controller.authStatus.value == AuthStatus.otp) ...[
-                        Text(
-                          "Enter OTP",
-                          style: Get.textTheme.bodyMedium!.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      if (controller.authStatus.value == AuthStatus.otp)
+                        OtpWidget(
+                          controller: controller,
+                          email: emailController.text.trim().toLowerCase(),
                         ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          height: 60,
-                          child: PinCodeTextField(
-                            backgroundColor: Colors.transparent,
-                            autoFocus: true,
-                            enablePinAutofill: true,
-                            appContext: context,
-                            length: 6,
-                            animationType: AnimationType.fade,
-                            textStyle: Get.textTheme.bodyMedium!.copyWith(
-                              color: Colors.white,
-                            ),
-                            pinTheme: PinTheme(
-                              inactiveBorderWidth: 1,
-                              shape: PinCodeFieldShape.box,
-                              borderRadius: BorderRadius.circular(3),
-                              fieldHeight: 40,
-                              fieldWidth: 40,
-                              selectedColor: ColorConst.primaryColor,
-                              activeColor: ColorConst.primaryColor,
-                              activeBorderWidth: 1,
-                              inactiveColor: Colors.white.withValues(
-                                alpha: 0.3,
-                              ),
-                            ),
-                            controller: otpController,
-                            keyboardType: TextInputType.number,
-                            onCompleted: (v) {
-                              FocusManager.instance.primaryFocus!.unfocus();
-                              controller.verifyOtp(
-                                otp: otpController.text.trim(),
-                                email: emailController.text
-                                    .trim()
-                                    .toLowerCase(),
-                              );
-                            },
-                            beforeTextPaste: (text) => true,
-                          ),
-                        ),
-                        // const SizedBox(height: 20),
-                      ],
                       Obx(
                         () => ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -239,12 +192,12 @@ class LoginPage extends StatelessWidget {
                                     .toLowerCase(),
                               );
                             } else {
-                              controller.verifyOtp(
-                                otp: otpController.text.trim(),
-                                email: emailController.text
-                                    .trim()
-                                    .toLowerCase(),
-                              );
+                              // controller.verifyOtp(
+                              //   otp: otpController.text.trim(),
+                              //   email: emailController.text
+                              //       .trim()
+                              //       .toLowerCase(),
+                              // );
                             }
                           },
                           child: controller.isLoading.value
@@ -304,6 +257,66 @@ class LoginPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class OtpWidget extends StatelessWidget {
+  final otpController = TextEditingController();
+  final focusNode = FocusNode();
+  final AuthController controller;
+  final String email;
+  OtpWidget({super.key, required this.controller, required this.email});
+
+  @override
+  Widget build(BuildContext context) {
+    focusNode.requestFocus();
+    print(focusNode.canRequestFocus);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Enter OTP",
+          style: Get.textTheme.bodyMedium!.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 60,
+          child: PinCodeTextField(
+            backgroundColor: Colors.transparent,
+            focusNode: focusNode,
+            enablePinAutofill: true,
+            appContext: context,
+            length: 6,
+            animationType: AnimationType.fade,
+            textStyle: Get.textTheme.bodyMedium!.copyWith(color: Colors.white),
+            pinTheme: PinTheme(
+              inactiveBorderWidth: 1,
+              shape: PinCodeFieldShape.box,
+              borderRadius: BorderRadius.circular(3),
+              fieldHeight: 40,
+              fieldWidth: 40,
+              selectedColor: ColorConst.primaryColor,
+              activeColor: ColorConst.primaryColor,
+              activeBorderWidth: 1,
+              inactiveColor: Colors.white.withValues(alpha: 0.3),
+            ),
+            controller: otpController,
+            keyboardType: TextInputType.number,
+            onCompleted: (v) {
+              FocusManager.instance.primaryFocus!.unfocus();
+              controller.verifyOtp(
+                otp: otpController.text.trim(),
+                email: email,
+              );
+            },
+            beforeTextPaste: (text) => true,
+          ),
+        ),
+      ],
     );
   }
 }
