@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:limewyre/appModules/auth/auth_controller.dart';
-import 'package:limewyre/appModules/price/pricing_page.dart';
+// import 'package:limewyre/appModules/price/pricing_page.dart';
 import 'package:limewyre/utils/custom_widgets.dart';
 import 'package:limewyre/utils/global_variables.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatelessWidget {
-  ProfilePage({super.key});
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,19 +58,19 @@ class ProfilePage extends StatelessWidget {
                   const SizedBox(height: 6),
 
                   // Free Plan
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        user.userPaidSource == 'FREE'
-                            ? 'Free plan'
-                            : user.userPaidSource,
-                        style: TextStyle(color: Colors.grey, fontSize: 14),
-                      ),
-                      SizedBox(width: 4),
-                      Icon(Iconsax.crown1, size: 16, color: Colors.orange),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     Text(
+                  //       user.userPaidSource == 'FREE'
+                  //           ? 'Free plan'
+                  //           : user.userPaidSource,
+                  //       style: TextStyle(color: Colors.grey, fontSize: 14),
+                  //     ),
+                  //     SizedBox(width: 4),
+                  //     Icon(Iconsax.crown1, size: 16, color: Colors.orange),
+                  //   ],
+                  // ),
 
                   // const SizedBox(height: 24),
                   // Row(
@@ -109,11 +109,11 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.lock_outline,
               title: "Privacy & Security",
             ),
-            _buildSettingTile(
-              icon: Iconsax.crown1,
-              title: "Subscription",
-              onTap: () => Get.to(() => PricingPage()),
-            ),
+            // _buildSettingTile(
+            //   icon: Iconsax.crown1,
+            //   title: "Subscription",
+            //   onTap: () => Get.to(() => PricingPage()),
+            // ),
             Obx(() {
               final auth = Get.find<AuthController>();
               return auth.deletingAccount.value
@@ -171,18 +171,18 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  static Widget _buildStat(String value, String label) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(color: Colors.grey)),
-      ],
-    );
-  }
+  // static Widget _buildStat(String value, String label) {
+  //   return Column(
+  //     children: [
+  //       Text(
+  //         value,
+  //         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+  //       ),
+  //       const SizedBox(height: 4),
+  //       Text(label, style: const TextStyle(color: Colors.grey)),
+  //     ],
+  //   );
+  // }
 
   static Widget _buildSettingTile({
     required IconData icon,

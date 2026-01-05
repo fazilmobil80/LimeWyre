@@ -60,6 +60,7 @@ class AuthController extends GetxController {
 
   Future<void> startSignIn({required String email}) async {
     isLoading.value = true;
+    authError.value = '';
     try {
       final result = await Amplify.Auth.signIn(
         username: email,
@@ -72,10 +73,16 @@ class AuthController extends GetxController {
       _handleNextStep(result, email);
     } on UserNotFoundException {
       await signUpAndStart(email);
-    } catch (e) {
+    } on AuthException catch (e) {
       log("startSignIn error → $e");
       if (e.toString().contains('Error: NOT_AUTHORIZED : Kindly Sigup')) {
         await signUpAndStart(email);
+      } else {
+        authError.value = e.message;
+        Fluttertoast.showToast(
+          msg: e.recoverySuggestion ?? 'Sign In Error',
+          backgroundColor: Colors.red,
+        );
       }
     } finally {
       isLoading.value = false;

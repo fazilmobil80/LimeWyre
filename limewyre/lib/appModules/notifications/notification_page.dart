@@ -31,29 +31,40 @@ class NotificationsPage extends StatelessWidget {
 
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "New (3)",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 16),
+        child: controller.newNotifications.isEmpty
+            ? Center(
+                child: Text(
+                  "No new notifications",
+                  style: Get.textTheme.bodyMedium!.copyWith(
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "New (${controller.newNotifications.length})",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
 
-            Expanded(
-              child: ListView.builder(
-                itemCount: controller.newNotifications.length,
-                itemBuilder: (context, index) {
-                  return _notificationTile(controller.newNotifications[index]);
-                },
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: controller.newNotifications.length,
+                      itemBuilder: (context, index) {
+                        return _notificationTile(
+                          controller.newNotifications[index],
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }

@@ -221,7 +221,7 @@ class _PersonalNotesState extends State<PersonalNotes> {
           const SizedBox(height: 6),
 
           Text(
-            'Start adding you thoughts and moments..',
+            'Start adding your thoughts and moments..',
             textAlign: TextAlign.center,
             style: Get.textTheme.bodyMedium!.copyWith(
               color: Colors.grey.shade500,
