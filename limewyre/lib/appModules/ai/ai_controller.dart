@@ -37,8 +37,12 @@ class AiController extends GetxController {
       question: question,
     );
     if (res.isOk) {
+      log('TEXT === ${res.body}');
       aiChat.removeLast();
-      aiChat.add({'text': res.body['answer'], 'source': res.body['source']});
+      aiChat.add({
+        'text': res.body['answer'] ?? '',
+        'source': res.body['source'],
+      });
       scrollToBottom();
     } else {
       aiChat.removeLast();
